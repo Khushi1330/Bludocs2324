@@ -30,3 +30,12 @@ export const login = async ({ email, password }) => {
   });
   return await client.send(command);
 };
+
+export const confirmUser = async ({ email, code }) => {
+  const command = new ConfirmSignUpCommand({
+    ClientId: process.env.COGNITO_CLIENT_ID,
+    Username: email,
+    ConfirmationCode: code,
+  });
+  return await client.send(command);
+};
