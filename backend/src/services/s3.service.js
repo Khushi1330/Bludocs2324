@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
-export const generateUploadUrl = async (filename, contentType) => {
-  const key = `uploads/${uuidv4()}-${filename}`;
+export const generateUploadUrl = async (fileName, contentType) => {
+  const key = `uploads/${uuidv4()}-${fileName}`;
 
   const command = new PutObjectCommand({
     Bucket: process.env.S3_BUCKET_NAME,

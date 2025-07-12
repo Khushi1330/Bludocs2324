@@ -3,16 +3,16 @@ import { saveMetadata, getDocumentsByUser } from "../services/dynamo.service.js"
 import asyncHandler from "../utils/asyncHandler.js";
 
 export const getSignedUrl = asyncHandler(async (req, res) => {
-  const { filename, contentType } = req.body;
-  const { uploadUrl, key } = await generateUploadUrl(filename, contentType);
+  const { fileName, contentType } = req.body;
+  const { uploadUrl, key } = await generateUploadUrl(fileName, contentType);
   res.json({ uploadUrl, key });
 });
 
 export const saveFileMetadata = asyncHandler(async (req, res) => {
-  const { filename, key, size, contentType } = req.body;
+  const { fileName, key, size, contentType } = req.body;
   const userId = req.user.sub;
 
-  await saveMetadata({ filename, key, size, contentType, userId });
+  await saveMetadata({ fileName, key, size, contentType, userId });
   res.status(201).json({ message: "Metadata saved" });
 });
 

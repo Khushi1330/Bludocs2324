@@ -1,4 +1,3 @@
-// services/cognito.service.js
 import {
   CognitoIdentityProviderClient,
   SignUpCommand,

@@ -5,14 +5,19 @@ const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 
 const TABLE_NAME = process.env.DYNAMO_TABLE_NAME;
 
-export const saveMetadata = async ({ key, filename, size, contentType, userId }) => {
+
+export const saveMetadata = async ({ key, fileName, size, contentType, userId }) => {
+  const TABLE_NAME = process.env.DYNAMO_TABLE_NAME;
+  if (!TABLE_NAME) {
+    throw new Error("DYNAMO_TABLE_NAME environment variable is not defined.");
+  }
   const command = new PutItemCommand({
     TableName: TABLE_NAME,
     Item: {
       userId: { S: userId },
-      timestamp: { N: Date.now().toString() },
+      timestamp: { S: Date.now().toString() },
       fileKey: { S: key },
-      fileName: { S: filename },
+      fileName: { S: fileName },
       fileSize: { N: size.toString() },
       contentType: { S: contentType },
     },
@@ -22,6 +27,11 @@ export const saveMetadata = async ({ key, filename, size, contentType, userId })
 };
 
 export const getDocumentsByUser = async (userId) => {
+  const TABLE_NAME = process.env.DYNAMO_TABLE_NAME;
+  if (!TABLE_NAME) {
+    throw new Error("DYNAMO_TABLE_NAME environment variable is not defined.");
+  }
+
   const command = new QueryCommand({
     TableName: TABLE_NAME,
     KeyConditionExpression: "userId = :uid",
