@@ -109,7 +109,7 @@ function App() {
     }
 
     try {
-      await api.delete(`/api/documents/${documentId}`, {
+      await api.delete(`/api/documents/delete/${documentId}`, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
 
@@ -139,7 +139,7 @@ function App() {
               <HomePage
                 documents={documents}
                 onUpload={handleUpload}
-                onDelete={(doc: { id: string }) => handleDelete(doc.id)}  
+                onDelete={(doc: { fileKey: string }) => handleDelete(doc.fileKey)}  
                 accessToken={accessToken}
                 refreshDocuments={refreshDocuments}
               />

@@ -98,25 +98,26 @@ export const uploadDocument = asyncHandler(async (req, res) => {
 });
 
 const uploadToS3 = async ({ fileBuffer, fileName, contentType }) => {
-  const key = `uploads/${Date.now()}_${fileName.replace(/\s+/g, '_')}`;
+  const key = `${Date.now()}_${fileName.replace(/\s+/g, "_")}`;
+  const filePath = `uploads/${key}`
   
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
-    Key: key,
+    Key: filePath,
     Body: fileBuffer,
     ContentType: contentType
   };
 
   const command = new PutObjectCommand(params);
   await s3Client.send(command);
-  
   return { Key: key };
 };
 
 export const deleteDocument = asyncHandler(async (req, res) => {
-  const key = req.query.key;     // get key from query param
+  console.log(req.params)
+  const key = req.params.filekey;     // get key from query param
   const userId = req.user.sub;
-
+  const filePath = `uploads/${key}`
   if (!key) {
     return res.status(400).json({ error: "Missing S3 key in request" });
   }
@@ -124,8 +125,8 @@ export const deleteDocument = asyncHandler(async (req, res) => {
   console.log("Deleting key:", key);
 
   try {
-    await deleteFromS3(key);
-    await deleteDocumentMetadata(userId, key);
+    await deleteFromS3(filePath);
+    await deleteDocumentMetadata(userId, filePath);
     res.json({ message: "Document deleted successfully" });
   } catch (error) {
     console.error("Error deleting document:", error);

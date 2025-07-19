@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 interface HomePageProps {
   documents: Document[];
   onUpload: (files: FileList) => Promise<void>;
-  onDelete: (doc: { id: string }) => Promise<void>;
+  onDelete: (doc: { fileKey: string }) => Promise<void>;
   accessToken: string | null;
   refreshDocuments: () => Promise<void>;
 }
@@ -76,12 +76,11 @@ const HomePage: React.FC<HomePageProps> = ({
     const searchLower = searchTerm.toLowerCase();
     return (
       doc.fileName?.toLowerCase().includes(searchLower) ||
-      doc.name?.toLowerCase().includes(searchLower) ||
       doc.fileType?.toLowerCase().includes(searchLower)
     );
   });
 
-  const totalSize = documents.reduce((sum, doc) => sum + (doc.size || doc.fileSize || 0), 0);
+  const totalSize = documents.reduce((sum, doc) => sum + (doc.fileSize || 0), 0);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
@@ -91,20 +90,26 @@ const HomePage: React.FC<HomePageProps> = ({
     return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
   };
 
-  const handleDeleteDocument = async (document: Document) => {
+  const handleDeleteDocument = async (id: string) => {
     if (!accessToken) {
       toast.error('Please sign in to delete files');
       return;
     }
 
+    console.log('handleDeleteDocument called with id:', id);
+
+    const document = documents.find(doc => String(doc.fileKey) === id);
+    console.log('Found document:', document);
+
+    if (!document) {
+      toast.error('Document not found');
+      return;
+    }
+
     try {
-      const identifier = document.id;
-
-      if (!identifier) {
-        throw new Error('No valid document identifier found');
-      }
-
-      await onDelete({ id: identifier });
+      const identifier = document.fileKey;
+      if (!identifier) throw new Error('No valid document identifier found');
+      await onDelete({ fileKey: String(identifier).slice(8) });
       await refreshDocuments();
       toast.success('Document deleted successfully');
     } catch (error) {
@@ -233,9 +238,9 @@ const HomePage: React.FC<HomePageProps> = ({
           >
             {filteredDocuments.map((document) => (
               <DocumentItem
-                key={document.id}
+                key={document.fileKey}
                 document={document}
-                onDelete={() => handleDeleteDocument(document)}
+                onDelete={handleDeleteDocument}
               />
             ))}
           </div>

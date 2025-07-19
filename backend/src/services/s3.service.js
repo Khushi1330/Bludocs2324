@@ -32,11 +32,12 @@ export const generateUploadUrl = async (fileName, contentType) => {
 };
 
 export const uploadToS3 = async ({ fileBuffer, fileName, contentType }) => {
-  const key = `uploads/${Date.now()}_${fileName.replace(/\s+/g, "_")}`;
+  const key = `${Date.now()}_${fileName.replace(/\s+/g, "_")}`;
+  const filePath = `uploads/${key}`
 
   const command = new PutObjectCommand({
     Bucket: S3_BUCKET_NAME,
-    Key: key,
+    Key: filePath,
     Body: fileBuffer,
     ContentType: contentType
   });
@@ -46,9 +47,10 @@ export const uploadToS3 = async ({ fileBuffer, fileName, contentType }) => {
 };
 
 export const deleteFromS3 = async (key) => {
+  const filePath = key;
   const command = new DeleteObjectCommand({
     Bucket: process.env.S3_BUCKET_NAME,
-    Key: key
+    Key: filePath
   });
 
   await s3Client.send(command);

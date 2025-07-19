@@ -12,19 +12,13 @@ export interface User {
 
 
 export interface Document {
-  key: string;
-  url: string;
-  type: string;
-  createdAt: string | Date;
-  size: number;
-  name: string;
-  id: string;
+  fileKey: string;
   fileName: string;
   fileUrl: string;
   fileSize:number,
   fileType:string,
   userId: string;
-  uploadedAt: string | Date;
+  timestamp: string;
 }
 
 export default api;

@@ -17,7 +17,7 @@ router.post("/presign", getSignedUrl);
 router.post("/metadata", saveFileMetadata);
 router.post("/upload", upload.single('file'), uploadDocument);
 router.get("/", listDocuments);
-router.delete("/delete", deleteDocument);
+router.delete("/delete/:filekey", deleteDocument);
 
 
 export default router;
