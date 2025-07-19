@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Document, User } from './types/api.ts';
 import Navbar from './components/Navbar';
 import LandingPage from './components/LandingPage';
@@ -15,22 +15,24 @@ function App() {
   const [currentView, setCurrentView] = useState<AppView>('landing');
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  const handleSignIn = async (token: string, name: string, email: string) => {
-    localStorage.setItem('accessToken', token);
-    localStorage.setItem('userEmail', email);
-    setAccessToken(token);
-    setUser({name, email, isVerified: true });
-
+  const fetchDocuments = async (token: string) => {
     try {
       const docsRes = await api.get('/api/documents', {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       setDocuments(docsRes.data);
-      setCurrentView('home');
     } catch (error) {
       console.error('Fetch documents error:', error);
     }
+  };
+
+  const handleSignIn = async (token: string, name: string, email: string) => {
+    localStorage.setItem('accessToken', token);
+    localStorage.setItem('userEmail', email);
+    setAccessToken(token);
+    setUser({ name, email, isVerified: true });
+    await fetchDocuments(token);
+    setCurrentView('home');
   };
 
   const handleLogout = () => {
@@ -44,6 +46,11 @@ function App() {
   const handleShowSignUp = () => setCurrentView('signup');
   const handleBackToLanding = () => setCurrentView('landing');
 
+  const refreshDocuments = async () => {
+    if (!accessToken) return;
+    await fetchDocuments(accessToken);
+  };
+
   const handleUpload = async (files: FileList) => {
     if (!accessToken) return;
 
@@ -51,12 +58,16 @@ function App() {
     const { name, type, size } = file;
 
     try {
-      const presignRes = await api.post('/api/documents/presign', {
-        fileName: name,
-        contentType: type
-      }, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
+      const presignRes = await api.post(
+        '/api/documents/presign',
+        {
+          fileName: name,
+          contentType: type
+        },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        }
+      );
 
       const { uploadUrl, key } = presignRes.data;
 
@@ -70,19 +81,22 @@ function App() {
         throw new Error('Failed to upload to S3');
       }
 
-      const metadataResponse = await api.post('/api/documents/metadata', {
-        fileName: name,
-        key,
-        contentType: type,
-        size,
-        fileType: type.split('/')[1] || 'unknown'
-      }, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
+      await api.post(
+        '/api/documents/metadata',
+        {
+          fileName: name,
+          key,
+          contentType: type,
+          size,
+          fileType: type.split('/')[1] || 'unknown'
+        },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        }
+      );
 
-      const newDocument: Document = metadataResponse.data;
-
-      setDocuments(prev => [...prev, newDocument]);
+      // Ensure latest state
+      await refreshDocuments();
     } catch (error) {
       console.error('Upload error:', error);
     }
@@ -99,7 +113,7 @@ function App() {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
 
-      setDocuments(prev => prev.filter(doc => doc.id !== documentId));
+      await refreshDocuments();
     } catch (error) {
       console.error('Delete error:', error);
     }
@@ -126,9 +140,9 @@ function App() {
                 documents={documents}
                 onUpload={handleUpload}
                 onDelete={(doc: { id: string }) => handleDelete(doc.id)}  
-                accessToken={accessToken} refreshDocuments={function (): Promise<void> {
-                  throw new Error('Function not implemented.');
-                } }              />
+                accessToken={accessToken}
+                refreshDocuments={refreshDocuments}
+              />
             );
           default:
             return <LandingPage onLogin={handleShowSignIn} />;

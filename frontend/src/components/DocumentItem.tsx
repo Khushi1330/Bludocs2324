@@ -4,7 +4,7 @@ import { Document } from '../types/api';
 
 interface Props {
   document: Document;
-  onDelete: () => void;
+  onDelete: (id: string) => void; // pass document ID/key
 }
 
 const DocumentItem: React.FC<Props> = ({ document, onDelete }) => {
@@ -13,6 +13,7 @@ const DocumentItem: React.FC<Props> = ({ document, onDelete }) => {
   const fileSize = document.fileSize || document.size || 0;
   const uploadedAt = document.uploadedAt || document.createdAt || new Date();
   const hasValidUrl = !!fileUrl;
+  const documentId = document.id || document.key || ''; // Use correct identifier
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -44,7 +45,10 @@ const DocumentItem: React.FC<Props> = ({ document, onDelete }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 border border-gray-200">
+    <div
+      className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 border border-gray-200"
+      key={documentId}
+    >
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-4 flex-1 min-w-0">
           <div className="flex-shrink-0">
@@ -86,9 +90,10 @@ const DocumentItem: React.FC<Props> = ({ document, onDelete }) => {
           </button>
 
           <button
-            onClick={onDelete}
+            onClick={() => onDelete(documentId)}
             className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             title="Delete"
+            disabled={!documentId}
           >
             <Trash2 className="h-5 w-5" />
           </button>
