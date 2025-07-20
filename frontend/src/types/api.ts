@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL:process.env.REACT_APP_API_BASE_URL, 
+  baseURL: "http://52.66.243.214:8000", 
 });
 
 export interface User {
