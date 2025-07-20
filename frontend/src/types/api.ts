@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://BluDocs-ALB-1669896389.ap-south-1.elb.amazonaws.com", 
+  baseURL: "https://drawings-lcd-furniture-obtaining.trycloudflare.com", 
 });
 
 export interface User {
