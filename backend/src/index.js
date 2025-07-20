@@ -1,12 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import express from "express"; // Make sure to import express here
-import cors from "cors";       // Import cors middleware
-import app from "./app.js";    // Your existing app import
-
-// Enable CORS for all origins
-app.use(cors());
+import app from "./app.js";
 
 console.log("Loaded ENV:", {
   S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
