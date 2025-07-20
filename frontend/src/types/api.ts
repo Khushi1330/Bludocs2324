@@ -1,7 +1,8 @@
 import axios from "axios";
 
+// Use environment variable for baseURL; fallback to a default if needed
 const api = axios.create({
-  baseURL: "https://drawings-lcd-furniture-obtaining.trycloudflare.com", 
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://default-backend-url.com", 
 });
 
 export interface User {
@@ -10,13 +11,12 @@ export interface User {
   isVerified: boolean;
 }
 
-
 export interface Document {
   fileKey: string;
   fileName: string;
   fileUrl: string;
-  fileSize:number,
-  fileType:string,
+  fileSize: number;
+  fileType: string;
   userId: string;
   timestamp: string;
 }
