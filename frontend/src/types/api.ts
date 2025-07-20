@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://52.66.243.214:8000", 
+  baseURL: "http://BluDocs-ALB-1669896389.ap-south-1.elb.amazonaws.com", 
 });
 
 export interface User {
