@@ -47,3 +47,8 @@ git clone <this-repo-url>
 cd bludocs-frontend  
 npm install  
 npm start  # Dev mode (Amplify auto-deploys on Git push)  
+
+### Backend (Node.js/Express)
+cd bludocs-backend  
+npm install  
+node server.js  # Runs on EC2 (ensure Cloudflare tunnel is active)  
