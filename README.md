@@ -7,7 +7,8 @@ A scalable, secure, and cloud-native document management solution for uploading,
 ## 📜 System Architecture Diagram
 
 <!-- Replace with actual path if hosted -->
-<!-- ![System Architecture Diagram](path/to/architecture-diagram.png) -->
+
+![System Architecture Diagram](https://github.com/user-attachments/assets/70f7bb73-896b-4b70-adc1-80d61fb590db)
 
 ---
 
@@ -214,8 +215,3 @@ DELETE /api/documents/delete?key=uploads/abc123-example.pdf
 
 We welcome contributions of all kinds — bug fixes, new features, documentation!
 
----
-
-## 📄 License
-
-MIT © [Team BluDocs]
